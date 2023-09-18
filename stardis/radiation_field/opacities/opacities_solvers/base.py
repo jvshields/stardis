@@ -15,6 +15,9 @@ from stardis.radiation_field.opacities.opacities_solvers.util import (
     get_number_density,
 )
 
+from stardis.radiation_field.opacities.opacities_solvers.voigt import voigt_profile_cuda
+from tqdm.notebook import tqdm
+
 # constants
 VACUUM_ELECTRIC_PERMITTIVITY = 1 / (4 * np.pi)
 BF_CONSTANT = (
@@ -451,7 +454,7 @@ def calc_alpha_line_at_nu(
 
     alpha_line_at_nu = np.zeros((no_depth_points, len(tracing_nus)))
 
-    for i in range(len(tracing_nus)):
+    for i in tqdm(range(len(tracing_nus))):
         nu = tracing_nus[i].value
         delta_nus = nu - line_nus
 
@@ -469,7 +472,7 @@ def calc_alpha_line_at_nu(
                 )
 
             else:
-                line_range_value = line_range.to(u.Hz).value
+                line_range_value = line_range.to(u.Hz, equivalencies=u.spectral()).value
                 line_start = line_nus.searchsorted(nu - line_range_value) + 1
                 line_end = line_nus.searchsorted(nu + line_range_value) + 1
                 delta_nus_considered = delta_nus[line_start:line_end]
@@ -488,7 +491,7 @@ def calc_alpha_line_at_nu(
     return alpha_line_at_nu, gammas, doppler_widths
 
 
-@numba.njit
+# @numba.njit
 def calc_alan_entries(
     delta_nus,
     doppler_widths_at_depth_point,
@@ -524,7 +527,7 @@ def calc_alan_entries(
         doppler_width = doppler_widths_at_depth_point[k]
         gamma = gammas_at_depth_point[k]
 
-        phis[k] = voigt_profile(delta_nu, doppler_width, gamma)
+        phis[k] = voigt_profile_cuda(delta_nu, doppler_width, gamma)
 
     return np.sum(phis * alphas_at_depth_point)
 

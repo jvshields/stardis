@@ -69,7 +69,7 @@ def calc_alpha_file(stellar_plasma, stellar_model, tracing_nus, opacity_source, 
 # rayleigh opacity
 def calc_alpha_rayleigh(stellar_plasma, stellar_model, tracing_nus, species):
     """
-    Calculates Rayleigh scattering opacity.
+    Calculates Rayleigh scattering opacity. Currently effectively never used.
     https://iopscience.iop.org/article/10.3847/0004-637X/817/2/116
     https://ui.adsabs.harvard.edu/abs/1962ApJ...136..690D/
 
@@ -91,7 +91,9 @@ def calc_alpha_rayleigh(stellar_plasma, stellar_model, tracing_nus, species):
     """
 
     nu_H = const.c.cgs * const.Ryd.cgs
+    # This corresponds to 1303 AA. Effectively means this is always 0
     upper_bound = 2.3e15 * u.Hz
+    # This is not the right way to do this. Should fix.
     tracing_nus[tracing_nus > upper_bound] = 0
     relative_nus = tracing_nus.value / (2 * nu_H.value)
 

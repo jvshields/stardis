@@ -81,6 +81,8 @@ def run_stardis(config_fname, tracing_lambdas_or_nus):
         raw_mesa_model = read_mesa_model(Path(config.model.fname))
         if config.model.truncate_to_shell != -99:
             raw_mesa_model.truncate_model(config.model.truncate_to_shell)
+        elif config.model.truncate_to_shell == -99:
+            pass
         elif config.model.truncate_to_shell < 0:
             raise ValueError(
                 f"{config.model.truncate_to_shell} shells were requested for mesa model truncation. -99 is default for no truncation."
